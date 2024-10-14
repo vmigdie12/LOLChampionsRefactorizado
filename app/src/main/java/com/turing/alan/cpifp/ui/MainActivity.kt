@@ -1,37 +1,28 @@
 package com.turing.alan.cpifp.ui
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.ListAdapter
 import com.turing.alan.cpifp.R
-import com.turing.alan.cpifp.data.ChampionsRepository
-import com.turing.alan.cpifp.data.InMemoryChampionsRepository
-import com.turing.alan.cpifp.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private val repository:ChampionsRepository = InMemoryChampionsRepository.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        //setContentView(R.layout.activity_main)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        setContentView(R.layout.activity_main)
+
+        // Cargar el fragmento de lista al iniciar la actividad
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ChampionListFragment())
+                .commit()
         }
+    }
 
-        val recyclerView = binding.championRecyclerView
-        // TODO EL ADAPTADOR AL RECYCLER VIEW
-        val adapter = ChampionsAdapter()
-        recyclerView.adapter = adapter
-        (recyclerView.adapter as ChampionsAdapter).submitList(repository.getChampions())
-
-
+    // Función para navegar al fragmento de detalles
+    fun navigateToChampionDetail(championId: Int) {
+        val fragment = ChampionDetailFragment.newInstance(championId)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null) // Permite regresar a la lista con el botón "atrás"
+            .commit()
     }
 }
